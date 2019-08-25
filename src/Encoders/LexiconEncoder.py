@@ -17,13 +17,13 @@ class LexiconEncoder(nn.Module):
     self.g = torch.nn.Linear(int(config['similarity_linear_nn_input_size']),
                              int(config['similarity_linear_nn_output_size']))
 
-    self.qFFN = FeedForward(int(self.config['question_FFN_input_size']),
-                            int(self.config['question_FFN_hidden_size']),
-                            int(self.config['question_FFN_second_hidden_size']))
+    self.qFFN = FeedForward(int(config['question_FFN_input_size']),
+                            int(config['question_FFN_hidden_size']),
+                            int(config['question_FFN_second_hidden_size']))
 
-    self.dFFN = FeedForward(int(self.config['paragraph_FFN_input_size']),
-                            int(self.config['paragraph_FFN_hidden_size']),
-                            int(self.config['paragraph_FFN_second_hidden_size']))
+    self.dFFN = FeedForward(int(config['paragraph_FFN_input_size']),
+                            int(config['paragraph_FFN_hidden_size']),
+                            int(config['paragraph_FFN_second_hidden_size']))
 
   '''
   For each word create a 280 dimensional vector that represent the similarity between
@@ -93,12 +93,12 @@ class LexiconEncoder(nn.Module):
     return embeddings_vector
 
   def forward(self, paragraph, question):
-    paragraph_emb = self.lexicon_encoder.get_sentence_embeddings(paragraph['context'])
+    paragraph_emb = self.get_sentence_embeddings(paragraph['context'])
     paragrapg_pos = paragraph['context_pos']
     paragraph_ner = paragraph['context_ner']
     paragraph_match = torch.stack([torch.tensor(match) for match in question['exact_match']])
-    question_emb = self.lexicon_encoder.get_sentence_embeddings(question['question'])
-    paragraph_vector = self.lexicon_encoder.create_doc_vector(paragraph_emb, paragrapg_pos,
+    question_emb = self.get_sentence_embeddings(question['question'])
+    paragraph_vector = self.create_doc_vector(paragraph_emb, paragrapg_pos,
                                                              paragraph_ner, paragraph_match,
                                                              question_emb, paragraph['context'],
                                                              question['question'])

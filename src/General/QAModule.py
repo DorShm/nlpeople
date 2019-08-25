@@ -13,6 +13,7 @@ class QAModule(nn.Module):
     self.contextual_config = config['contextual']
     self.config = config['qamodule']
     self.lexicon_encoder = LexiconEncoder(words_embeddings, self.lexicon_config)
+    #TODO : change to one model for the German English model instead of two
     self.question_contextual_encoder = ContextEncoder(self.contextual_config)
     self.paragraph_contextual_encoder = ContextEncoder(self.contextual_config)
     self.data = None
