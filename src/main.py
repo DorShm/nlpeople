@@ -12,5 +12,6 @@ def main():
         for question in sentence['qas']:
             x, y = qa_module(sentence, question)
 
+
 if __name__ == '__main__':
     main()
