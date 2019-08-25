@@ -5,7 +5,8 @@ from src.Preprocess import preprocess
 
 def main():
     init.init()
-    preprocess.preprocess(True)
+    # TODO : use preprocessing only when required
+    #preprocess.preprocess(True)
     qa_module = QAModule(init.words_embeddings, settings.config)
 
     for sentence in qa_module.data:
