@@ -12,14 +12,8 @@ class QAModule(nn.Module):
     self.lexicon_config = config['lexicon']
     self.contextual_config = config['contextual']
     self.config = config['qamodule']
-
-    self.qFFN = FeedForward(int(self.config['question_FFN_input_size']),
-                            int(self.config['question_FFN_hidden_size']),
-                            int(self.config['question_FFN_second_hidden_size']))
-    self.dFFN = FeedForward(int(self.config['paragraph_FFN_input_size']),
-                            int(self.config['paragraph_FFN_hidden_size']),
-                            int(self.config['paragraph_FFN_second_hidden_size']))
     self.lexicon_encoder = LexiconEncoder(words_embeddings, self.lexicon_config)
+    #TODO : change to one model for the German English model instead of two
     self.question_contextual_encoder = ContextEncoder(self.contextual_config)
     self.paragraph_contextual_encoder = ContextEncoder(self.contextual_config)
     self.data = None
@@ -27,20 +21,14 @@ class QAModule(nn.Module):
       self.data = json.load(f)['data']
 
   def forward(self, sentence, question):
-    sentence_emb = self.lexicon_encoder.get_sentence_embeddings(sentence['context'])
-    sentence_pos = sentence['context_pos']
-    sentence_ner = sentence['context_ner']
-    sentence_match = torch.stack([torch.tensor(match) for match in question['exact_match']])
-    question_emb = self.lexicon_encoder.get_sentence_embeddings(question['question'])
-    sentence_vector = self.lexicon_encoder.create_doc_vector(sentence_emb, sentence_pos,
-                                                             sentence_ner, sentence_match,
-                                                             question_emb, sentence['context'],
-                                                             question['question'])
+    paragraph_vector, question_vector, paragraph_emb, question_emb = self.lexicon_encoder(sentence, question)
 
-    question_vector = self.qFFN(question_emb)
-    sentence_vector = self.dFFN(sentence_vector)
-
+    # TODO : add german english model
+    # TODO : create a CuntextualEncoder Class
     question_vector = self.question_contextual_encoder(question_vector)
-    sentence_vector = self.paragraph_contextual_encoder(sentence_vector)
+    sentence_vector = self.paragraph_contextual_encoder(paragraph_vector)
 
+    # TODO: create the memory layer
+
+    # TODO: create the finale GRU layer
     return question_vector, sentence_vector
