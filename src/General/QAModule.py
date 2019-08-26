@@ -1,7 +1,7 @@
 import json
 import torch
 from torch import nn
-from src.Encoders.ContextEncoder import ContextEncoder
+from Encoders.GermanEnglishCoVe import GermanEnglishCoVe
 from src.Encoders.LexiconEncoder import LexiconEncoder
 from src.General.FeedForward import FeedForward
 
@@ -14,8 +14,8 @@ class QAModule(nn.Module):
     self.config = config['qamodule']
     self.lexicon_encoder = LexiconEncoder(words_embeddings, self.lexicon_config)
     #TODO : change to one model for the German English model instead of two
-    self.question_contextual_encoder = ContextEncoder(self.contextual_config)
-    self.paragraph_contextual_encoder = ContextEncoder(self.contextual_config)
+    self.question_contextual_encoder = GermanEnglishCoVe(self.contextual_config)
+    self.paragraph_contextual_encoder = GermanEnglishCoVe(self.contextual_config)
     self.data = None
     with open(self.config['data_file'], 'r') as f:
       self.data = json.load(f)['data']
@@ -24,7 +24,7 @@ class QAModule(nn.Module):
     paragraph_vector, question_vector, paragraph_emb, question_emb = self.lexicon_encoder(sentence, question)
 
     # TODO : add german english model
-    # TODO : create a CuntextualEncoder Class
+    # TODO : create a ContextualEncoder Class - Use ContextualEncoder
     question_vector = self.question_contextual_encoder(question_vector)
     sentence_vector = self.paragraph_contextual_encoder(paragraph_vector)
 
