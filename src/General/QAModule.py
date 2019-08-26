@@ -23,12 +23,13 @@ class QAModule(nn.Module):
   def forward(self, sentence, question):
     paragraph_vector, question_vector, paragraph_emb, question_emb = self.lexicon_encoder(sentence, question)
 
-    # TODO : add german english model
-    # TODO : create a ContextualEncoder Class - Use ContextualEncoder
+    # TODO : add german english model - Use GermanEnglishCove
+    # TODO : create a ContextualEncoder Class - Use ContextEncoder
     question_vector = self.question_contextual_encoder(question_vector)
     sentence_vector = self.paragraph_contextual_encoder(paragraph_vector)
 
     # TODO: create the memory layer
+    memory_layer = MemoryLayer(self.memory_config)
 
     # TODO: create the finale GRU layer
     return question_vector, sentence_vector
