@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 
+
 class GermanEnglishCoVe(nn.Module):
   def __init__(self, config):
     super(GermanEnglishCoVe, self).__init__()
