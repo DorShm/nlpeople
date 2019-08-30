@@ -25,10 +25,10 @@ class OneLayerBRNN(nn.Module):
     self.dropout = dropout
     self.output_size = hidden_size * 2
     self.hidden_size = hidden_size
-    self.rnn = getattr(nn, self.cell_type)(input_size, hidden_size, num_layers=1, bidirectional=True)
+    self.rnn = nn.RNN(input_size, hidden_size, num_layers=1, bidirectional=True)
 
   def forward(self, x):
-    x = self.dropout(x)
+    #x = self.dropout(x)
     size = x.size()
     rnn_output, h = self.rnn(x)
     rnn_output = self.maxout(rnn_output, size)
@@ -39,4 +39,4 @@ class OneLayerBRNN(nn.Module):
   of size 128
   '''
   def maxout(self, rnn_output, size):
-    return rnn_output.view(size[0], self.hidden_size, 2).max(-1)[0]
+    return rnn_output.view(size[0], size[1], self.hidden_size, 2).max(-1)[0]

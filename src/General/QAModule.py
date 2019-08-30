@@ -41,11 +41,11 @@ class QAModule(nn.Module):
     # Contextual Layer
     question_vector = self.question_contextual_encoder(question_vector, question_cove_vector_l1,
                                                        question_cove_vector_l2)
-    sentence_vector = self.paragraph_contextual_encoder(paragraph_vector, paragraph_cove_vector_l1,
+    paragraph_vector = self.paragraph_contextual_encoder(paragraph_vector, paragraph_cove_vector_l1,
                                                         paragraph_cove_vector_l2)
 
     # TODO: create the memory layer
     memory_layer = MemoryLayer(self.memory_config)
 
     # TODO: create the finale GRU layer
-    return question_vector, sentence_vector
+    return question_vector, paragraph_vector

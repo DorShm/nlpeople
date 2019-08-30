@@ -12,7 +12,7 @@ class GermanEnglishCoVe(nn.Module):
     self.dropout = float(config['dropout'])
     self.lstm_l1 = nn.LSTM(self.input_size, self.hidden_size, num_layers=1, bidirectional=True, dropout=self.dropout)
     self.lstm_l2 = nn.LSTM(self.second_input_size, self.second_hidden_size, num_layers=1, bidirectional=True, dropout=self.dropout)
-    self.output_size = int(config['second_hidden_size'])
+    self.output_size = 600
     self._load_model_weights(config['cove_model_path'])
 
     for param in self.parameters(): param.requires_grad = False
@@ -27,7 +27,7 @@ class GermanEnglishCoVe(nn.Module):
     self.lstm_l2.load_state_dict(state_dict_l2)
 
   def forward(self, x):
-    output_l1, _ = self.lstm_l1(x)
-    # TODO : layer 2 should get a vector of size 600 which is made by concatenating output_l1 with the x
+    size = x.size()
+    output_l1, _ = self.lstm_l1(x.view(1, size[0], size[1]))
     output_l2, _ = self.lstm_l2(output_l1)
     return output_l1, output_l2
