@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 
+
 class GermanEnglishCoVe(nn.Module):
   def __init__(self, config):
     super(GermanEnglishCoVe, self).__init__()
@@ -27,5 +28,6 @@ class GermanEnglishCoVe(nn.Module):
 
   def forward(self, x):
     output_l1, _ = self.lstm_l1(x)
+    # TODO : layer 2 should get a vector of size 600 which is made by concatenating output_l1 with the x
     output_l2, _ = self.lstm_l2(output_l1)
     return output_l1, output_l2
