@@ -12,7 +12,7 @@ class GermanEnglishCoVe(nn.Module):
     self.dropout = float(config['dropout'])
     self.lstm_l1 = nn.LSTM(self.input_size, self.hidden_size, num_layers=1, bidirectional=True, dropout=self.dropout)
     self.lstm_l2 = nn.LSTM(self.second_input_size, self.second_hidden_size, num_layers=1, bidirectional=True, dropout=self.dropout)
-
+    self.output_size = int(config['second_hidden_size'])
     self._load_model_weights(config['cove_model_path'])
 
     for param in self.parameters(): param.requires_grad = False

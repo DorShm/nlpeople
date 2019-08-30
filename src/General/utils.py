@@ -89,3 +89,17 @@ def get_alignment_vector():
 
 def get_text_embeddings(text, embeddings_module):
   return [embeddings_module[word] for word in text]
+
+def config_to_dict(config):
+  """
+  Converts a ConfigParser object into a dictionary.
+
+  The resulting dictionary has sections as keys which point to a dict of the
+  sections options as key => value pairs.
+  """
+  the_dict = {}
+  for section in config.sections():
+    the_dict[section] = {}
+    for key, val in config.items(section):
+      the_dict[section][key] = val
+  return the_dict

@@ -2,7 +2,7 @@ import json
 import torch
 from torch import nn
 
-from Layers.MemoryLayer import MemoryLayer
+from src.Layers.MemoryLayer import MemoryLayer
 from src.Encoders.GermanEnglishCoVe import GermanEnglishCoVe
 from src.Encoders.LexiconEncoder import LexiconEncoder
 from src.Encoders.ContextEncoder import ContextEncoder
@@ -20,6 +20,9 @@ class QAModule(nn.Module):
     # networks
     self.lexicon_encoder = LexiconEncoder(words_embeddings, self.lexicon_config)
     self.german_english_cove = GermanEnglishCoVe(self.german_english_cove_config)
+    self.contextual_config['input_size'] = \
+      self.german_english_cove.output_size + self.lexicon_encoder.output_size
+    self.contextual_config['cove_size'] = self.german_english_cove.output_size
     self.paragraph_contextual_encoder = ContextEncoder(self.contextual_config)
     self.question_contextual_encoder = ContextEncoder(self.contextual_config)
 

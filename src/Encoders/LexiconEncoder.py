@@ -24,6 +24,7 @@ class LexiconEncoder(nn.Module):
     self.dFFN = FeedForward(int(config['paragraph_FFN_input_size']),
                             int(config['paragraph_FFN_hidden_size']),
                             int(config['paragraph_FFN_second_hidden_size']))
+    self.output_size = int(config['paragraph_FFN_second_hidden_size'])
 
   '''
   For each word create a 280 dimensional vector that represent the similarity between
