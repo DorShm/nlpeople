@@ -2,7 +2,7 @@ import json
 import torch
 from torch import nn
 
-from Layers.MemoryLayer import MemoryLayer
+from src.Layers.MemoryLayer import MemoryLayer
 from src.Encoders.GermanEnglishCoVe import GermanEnglishCoVe
 from src.Encoders.LexiconEncoder import LexiconEncoder
 from src.Encoders.ContextEncoder import ContextEncoder
