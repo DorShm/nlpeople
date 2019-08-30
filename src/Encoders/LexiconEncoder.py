@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as functional
 from torch import nn as nn
-from src.General.FeedForward import FeedForward
+from src.General.Networks import FeedForward
 
 
 class LexiconEncoder(nn.Module):
@@ -93,12 +93,12 @@ class LexiconEncoder(nn.Module):
     return embeddings_vector
 
   def forward(self, paragraph, question):
-    paragraph_emb = self.get_sentence_embeddings(paragraph['context'])
+    paragraph_emb = self.lexicon_encoder.get_sentence_embeddings(paragraph['context'])
     paragrapg_pos = paragraph['context_pos']
     paragraph_ner = paragraph['context_ner']
     paragraph_match = torch.stack([torch.tensor(match) for match in question['exact_match']])
-    question_emb = self.get_sentence_embeddings(question['question'])
-    paragraph_vector = self.create_doc_vector(paragraph_emb, paragrapg_pos,
+    question_emb = self.lexicon_encoder.get_sentence_embeddings(question['question'])
+    paragraph_vector = self.lexicon_encoder.create_doc_vector(paragraph_emb, paragrapg_pos,
                                                              paragraph_ner, paragraph_match,
                                                              question_emb, paragraph['context'],
                                                              question['question'])
