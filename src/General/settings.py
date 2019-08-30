@@ -1,5 +1,6 @@
 import nltk
 from configparser import ConfigParser
+from src.General.utils import *
 
 #/content/drive/My Drive/NLP/Project
 config_file_path = "../assets/config.ini"
@@ -17,6 +18,7 @@ def initialize_config():
 
   config = ConfigParser()
   config.read(config_file_path)
+  config = config_to_dict(config)
 
 #TODO: Move this to config file
 def initialize_hardcoded():

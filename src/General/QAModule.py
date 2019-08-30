@@ -20,6 +20,9 @@ class QAModule(nn.Module):
     # networks
     self.lexicon_encoder = LexiconEncoder(words_embeddings, self.lexicon_config)
     self.german_english_cove = GermanEnglishCoVe(self.german_english_cove_config)
+    self.contextual_config['input_size'] = \
+      self.german_english_cove.output_size + self.lexicon_encoder.output_size
+    self.contextual_config['cove_size'] = self.german_english_cove.output_size
     self.paragraph_contextual_encoder = ContextEncoder(self.contextual_config)
     self.question_contextual_encoder = ContextEncoder(self.contextual_config)
 
@@ -38,11 +41,11 @@ class QAModule(nn.Module):
     # Contextual Layer
     question_vector = self.question_contextual_encoder(question_vector, question_cove_vector_l1,
                                                        question_cove_vector_l2)
-    sentence_vector = self.paragraph_contextual_encoder(paragraph_vector, paragraph_cove_vector_l1,
+    paragraph_vector = self.paragraph_contextual_encoder(paragraph_vector, paragraph_cove_vector_l1,
                                                         paragraph_cove_vector_l2)
 
     # TODO: create the memory layer
     memory_layer = MemoryLayer(self.memory_config)
 
     # TODO: create the finale GRU layer
-    return question_vector, sentence_vector
+    return question_vector, paragraph_vector
