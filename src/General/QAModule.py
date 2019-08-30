@@ -15,6 +15,7 @@ class QAModule(nn.Module):
     self.lexicon_config = config['lexicon']
     self.german_english_cove_config = config['german_english_cove']
     self.contextual_config = config['contextual']
+    self.memory_config = config['memory']
     self.config = config['qamodule']
 
     # networks
@@ -25,6 +26,7 @@ class QAModule(nn.Module):
     self.contextual_config['cove_size'] = self.german_english_cove.output_size
     self.paragraph_contextual_encoder = ContextEncoder(self.contextual_config)
     self.question_contextual_encoder = ContextEncoder(self.contextual_config)
+    self.memory_layer = MemoryLayer(self.memory_config, self.question_contextual_encoder.layer_2.hidden_size)
 
     self.data = None
     with open(self.config['data_file'], 'r') as f:
@@ -44,8 +46,7 @@ class QAModule(nn.Module):
     paragraph_vector = self.paragraph_contextual_encoder(paragraph_vector, paragraph_cove_vector_l1,
                                                         paragraph_cove_vector_l2)
 
-    # TODO: create the memory layer
-    memory_layer = MemoryLayer(self.memory_config)
+    memory = self.memory_layer(question_vector, paragraph_vector)
 
     # TODO: create the finale GRU layer
     return question_vector, paragraph_vector
