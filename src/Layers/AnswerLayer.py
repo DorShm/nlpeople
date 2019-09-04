@@ -37,3 +37,8 @@ class AnswerLayer(nn.Module):
 
             start_score_list.append(start_vector)
             end_score_list.append(end_vector)
+
+        start = torch.mean(start_score_list)
+        end = torch.mean(end_score_list)
+
+        return start, end
