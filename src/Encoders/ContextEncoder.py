@@ -8,7 +8,7 @@ class ContextEncoder(nn.Module):
   def __init__(self, config):
     super(ContextEncoder, self).__init__()
     self.layer_1_input_size = int(config['input_size'])
-    self.layer_1_output_size= int(config['layer_1_output_size'])
+    self.layer_1_output_size = int(config['layer_1_output_size'])
     self.layer_2_input_size = self.layer_1_output_size + int(config['cove_size'])
     self.layer_2_output_size = int(config['layer_2_output_size'])
     self.dropout = float(config['dropout'])

@@ -5,6 +5,7 @@ from torchnlp.nn import Attention
 
 from src.General.Networks import OneLayerBRNN
 
+
 # TODO: add config to memory layer
 class MemoryLayer(nn.Module):
   def __init__(self, config, d):
