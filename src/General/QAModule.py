@@ -17,7 +17,6 @@ class QAModule(nn.Module):
     self.contextual_config = config['contextual']
     self.memory_config = config['memory_layer']
     self.answer_config = config['answer_layer']
-    self.config = config['qamodule']
 
     # networks
     self.lexicon_encoder = LexiconEncoder(words_embeddings, self.lexicon_config)
@@ -32,9 +31,6 @@ class QAModule(nn.Module):
     self.answer_layer = AnswerLayer(self.answer_config, self.memory_layer.output_size,
                                     self.question_contextual_encoder.output_size)
 
-    self.data = None
-    with open(self.config['data_file'], 'r') as f:
-      self.data = json.load(f)['data']
 
   def forward(self, sentence, question):
     # Lexicon Layer

@@ -10,7 +10,7 @@ ner_tag_to_id = None
 '''
   Document this!
 '''
-def preprocess(save_data=False):
+def preprocess(save_preproces_data=False):
   init_preprocess()
 
   instances = read_data()
@@ -22,7 +22,7 @@ def preprocess(save_data=False):
 
       preprocessed_instances.append(instance)
 
-  if save_data:
+  if save_preproces_data:
     save_preprocessed_data(preprocessed_instances)
 
   return preprocessed_instances

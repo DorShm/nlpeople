@@ -1,17 +1,23 @@
+import ast
+import json
+
 from src.General import settings, init
-from src.General.QAModule import QAModule
 from src.Preprocess import preprocess
+from src.SQuADModel import SQuADModel
 
 
 def main():
-    init.init()
-    # TODO : use preprocessing only when required
-    #preprocess.preprocess(True)
-    qa_module = QAModule(init.words_embeddings, settings.config)
+    logger = init.init()
+    if ast.literal_eval(settings.config['preprocessing']['preprocess']):
+        preprocess.preprocess(ast.literal_eval(settings.config['preprocessing']['save_preprocess_data']))
 
-    for sentence in qa_module.data:
-        for question in sentence['qas']:
-            x, y = qa_module(sentence, question)
+    with open(settings.config['general']['data_file'], 'r') as f:
+      data = json.load(f)['data']
+    squad_model = SQuADModel(init.words_embeddings, settings.config)
+    for epoch in range(int(settings.config['general']['epoches'])):
+        for paragraph in data:
+            for question in paragraph['qas']:
+                squad_model.update(paragraph, question)
 
 
 if __name__ == '__main__':
