@@ -7,14 +7,14 @@ from src.SQuADModel import SQuADModel
 
 
 def main():
-    init.init()
+    logger = init.init()
     if ast.literal_eval(settings.config['preprocessing']['preprocess']):
         preprocess.preprocess(ast.literal_eval(settings.config['preprocessing']['save_preprocess_data']))
 
     with open(settings.config['general']['data_file'], 'r') as f:
       data = json.load(f)['data']
     squad_model = SQuADModel(init.words_embeddings, settings.config)
-    for epoch in int(settings.config['general']['epoches']):
+    for epoch in range(int(settings.config['general']['epoches'])):
         for paragraph in data:
             for question in paragraph['qas']:
                 squad_model.update(paragraph, question)

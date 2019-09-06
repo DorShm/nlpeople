@@ -2,6 +2,7 @@ import nltk
 import src.General.settings as settings
 import gensim.downloader as api
 import pickle
+from src.General.utils import init_logger
 
 words_embeddings = None
 
@@ -16,6 +17,8 @@ def init():
         pickle.dump(words_embeddings, open("../assets/word2vec.model", 'wb'))
     else:
         words_embeddings = pickle.load(open("../assets/word2vec.model", 'rb'))
+
+    return init_logger()
 
 
 def download_nltk_datasets():

@@ -11,7 +11,7 @@ from src.General.QAModule import QAModule
 # noinspection PyArgumentList
 class SQuADModel:
   def __init__(self, words_embeddings, config):
-    self.config = config
+    self.config = config['squad_model']
     self.qa_module: QAModule = QAModule(words_embeddings, config)
     self.cuda_on = ast.literal_eval(self.config['cuda_on'])
     self.model_loss = ModelLoss()
