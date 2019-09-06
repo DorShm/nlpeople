@@ -1,21 +1,24 @@
 import torch
 from torch import nn
-from torch.nn import functional as F
 from torchnlp.nn import Attention
-
 from src.General.Networks import OneLayerBRNN
 
 
-# TODO: add config to memory layer
 class MemoryLayer(nn.Module):
   def __init__(self, config, d):
     super(MemoryLayer, self).__init__()
-    self.q_transform = nn.RNN(input_size=(2 * d), hidden_size=128, nonlinearity='relu')
-    self.p_transform = nn.RNN(input_size=(2 * d), hidden_size=128, nonlinearity='relu')
-    self.attention = Attention(128, attention_type='dot')
-    self.self_attention = Attention(4 * d)
-    self.bi_lstm = OneLayerBRNN(input_size=(8 * d), hidden_size=128, dropout=config['dropout'])
+    self.q_transform = nn.RNN(input_size=(int(config['transform_input_size']) * d),
+                              hidden_size=int(config['hidden_size']), nonlinearity=config['nonlinearity'])
 
+    self.p_transform = nn.RNN(input_size=(int(config['transform_input_size']) * d),
+                              hidden_size=int(config['hidden_size']), nonlinearity=config['nonlinearity'])
+
+    self.attention = Attention(int(config['hidden_size']), attention_type='dot')
+    self.self_attention = Attention(int(config['attention_input_size']) * d)
+    self.bi_lstm = OneLayerBRNN(input_size=(int(config['bi_lstm_input_size']) * d),
+                                hidden_size=int(config['hidden_size']), dropout=config['dropout'])
+
+    self.output_size = int(config['hidden_size'])
     self.dropout = nn.Dropout(float(config['dropout']))
 
   def forward(self, H_Q, H_P):
