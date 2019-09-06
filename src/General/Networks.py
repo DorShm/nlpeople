@@ -1,4 +1,5 @@
 from torch import nn
+from torch.nn import functional as F
 
 
 class FeedForward(nn.Module):
@@ -40,3 +41,26 @@ class OneLayerBRNN(nn.Module):
   '''
   def maxout(self, rnn_output, size):
     return rnn_output.view(size[0], size[1], self.hidden_size, 2).max(-1)[0]
+
+
+class LinearSelfAttn(nn.Module):
+  def __init__(self, input_size):
+    super(LinearSelfAttn, self).__init__()
+    self.linear = nn.Linear(input_size, 1)
+
+  def forward(self, x):
+    x_flat = x.contiguous().view(-1, x.size(-1))
+    scores = self.linear(x_flat).view(x.size(0), x.size(1))
+    alpha = F.softmax(scores, 1)
+    return alpha.unsqueeze(1).bmm(x).squeeze(1)
+
+
+class Bilinear(nn.Module):
+  def __init__(self, x_size, y_size):
+    super(Bilinear, self).__init__()
+    self.linear = nn.Linear(y_size, x_size)
+
+  def forward(self, x, y):
+    Wy = self.linear(y)
+    xWy = x.bmm(Wy.unsqueeze(2)).squeeze(2)
+    return xWy

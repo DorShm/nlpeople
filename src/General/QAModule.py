@@ -1,12 +1,11 @@
 import json
-import torch
 from torch import nn
-from torchnlp.nn import Attention
-
 from src.Layers.MemoryLayer import MemoryLayer
+from src.Layers.AnswerLayer import AnswerLayer
 from src.Encoders.GermanEnglishCoVe import GermanEnglishCoVe
 from src.Encoders.LexiconEncoder import LexiconEncoder
 from src.Encoders.ContextEncoder import ContextEncoder
+from src.General.Networks import LinearSelfAttn
 
 
 class QAModule(nn.Module):
@@ -16,7 +15,8 @@ class QAModule(nn.Module):
     self.lexicon_config = config['lexicon']
     self.german_english_cove_config = config['german_english_cove']
     self.contextual_config = config['contextual']
-    self.memory_config = config['memory']
+    self.memory_config = config['memory_layer']
+    self.answer_config = config['answer_layer']
     self.config = config['qamodule']
 
     # networks
@@ -28,8 +28,9 @@ class QAModule(nn.Module):
     self.paragraph_contextual_encoder = ContextEncoder(self.contextual_config)
     self.question_contextual_encoder = ContextEncoder(self.contextual_config)
     self.memory_layer = MemoryLayer(self.memory_config, self.question_contextual_encoder.layer_2.hidden_size)
-    self.question_contextual_self_attention = Attention(self.question_contextual_encoder.layer_2_output_size)
-    self.answer_layer = None
+    self.linear_self_attention = LinearSelfAttn(self.question_contextual_encoder.output_size)
+    self.answer_layer = AnswerLayer(self.answer_config, self.memory_layer.output_size,
+                                    self.question_contextual_encoder.output_size)
 
     self.data = None
     with open(self.config['data_file'], 'r') as f:
@@ -52,7 +53,6 @@ class QAModule(nn.Module):
     memory = self.memory_layer(question_vector, paragraph_vector)
 
     # TODO: create the finale GRU layer
-    GRU_initial_state = self.question_contextual_self_attention(question_vector)
+    GRU_initial_state = self.linear_self_attention(question_vector)
     start, end = self.answer_layer(memory, GRU_initial_state)
-
-    return question_vector, paragraph_vector
+    return start, end
