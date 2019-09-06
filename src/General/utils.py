@@ -13,17 +13,11 @@ def map_tags_to_ids(tags, include_unk):
 
   return tag_to_id
 
-'''
-  Document this!
-'''
 def get_context_pos(context, pos_tag_to_id):
   text = nltk.word_tokenize(context)
   pos_context = nltk.pos_tag(text)
   return [pos_tag_to_id.get(pos_tag, pos_tag_to_id['UNK']) for _, pos_tag in pos_context]
 
-'''
-  Document this!
-'''
 def get_context_ner(context, ner_tag_to_id):
   context_ner = []
   words = nltk.word_tokenize(context)
@@ -40,18 +34,12 @@ def get_context_ner(context, ner_tag_to_id):
 
   return context_ner
 
-'''
-  Document this!
-'''
 def extract_chunk_data(chunk, ner_tag_to_id):
   label = ner_tag_to_id[chunk.label()] if hasattr(chunk, 'label') else ner_tag_to_id['O']
   chunk_length = len(chunk) if isinstance(chunk, nltk.Tree) else 1
 
   return label, chunk_length
 
-'''
-  Document this!
-'''
 def get_match_vectors(context, question):
   match_vectors = []
 
@@ -64,10 +52,6 @@ def get_match_vectors(context, question):
 
   return match_vectors
 
-
-'''
-  Document this!
-'''
 def get_match_vector(matched_word, sentence):
   lower_sentence = list(map(lambda word: str.lower(word), sentence))
 
@@ -81,9 +65,6 @@ def get_match_vector(matched_word, sentence):
 
   return [original_match, lower_match, lemma_match]
 
-'''
-  Document this!
-'''
 def get_alignment_vector():
   pass
 
@@ -103,3 +84,21 @@ def config_to_dict(config):
     for key, val in config.items(section):
       the_dict[section][key] = val
   return the_dict
+
+class ModelLoss:
+  def __init__(self):
+    self.reset_counter()
+
+  @property
+  def average_loss(self):
+    return self.loss_sum / self.loss_item_count if self.loss_item_count != 0 else 0
+
+  def reset_counter(self):
+    self.current_loss = 0
+    self.loss_sum = 0
+    self.loss_item_count = 0
+
+  def calculate_loss(self, loss):
+    self.current_loss = loss
+    self.loss_sum += loss
+    self.loss_item_count += 1
