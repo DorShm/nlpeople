@@ -1,6 +1,8 @@
 import json
 
 import nltk
+
+from src.General.utils import LOGGER
 from src.General import utils
 from src.General import settings
 from tqdm import tqdm
@@ -11,13 +13,13 @@ ner_tag_to_id = None
 '''
   Document this!
 '''
-def preprocess(logger, save_preproces_data=False):
-  logger.info("Initiate preprocessing process")
+def preprocess(save_preproces_data=False):
+  LOGGER.info("Initiate preprocessing process")
   init_preprocess()
-  logger.info('Reading data from file')
+  LOGGER.info('Reading data from file')
   instances = read_data()
   preprocessed_instances = []
-  logger.info("Starting process data to instances")
+  LOGGER.info("Starting process data to instances")
   for instance in tqdm(instances, total=len(instances)):
     for paragraph in instance["paragraphs"]:
       instance = preprocess_paragraph(paragraph)
@@ -25,7 +27,7 @@ def preprocess(logger, save_preproces_data=False):
       preprocessed_instances.append(instance)
 
   if save_preproces_data:
-    logger.info(f"Saving preprocessed data to {settings.config['preprocessing']['output_file']}")
+    LOGGER.info(f"Saving preprocessed data to {settings.config['preprocessing']['output_file']}")
     save_preprocessed_data(preprocessed_instances)
 
 

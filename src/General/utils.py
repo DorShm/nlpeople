@@ -3,6 +3,8 @@ import logging
 from nltk.stem import WordNetLemmatizer
 from datetime import datetime
 
+LOGGER = None
+
 def map_tags_to_ids(tags, include_unk):
   tag_to_id = {}
   i = 0
@@ -128,9 +130,11 @@ class ModelLoss:
     self.loss_item_count += 1
 
 def init_logger():
+  global LOGGER
+
   now = datetime.today().strftime('%Y-%m-%d-%H-%M-%S')
-  logger = logging.getLogger('nlpeople_logger')
-  logger.setLevel(logging.DEBUG)
+  LOGGER = logging.getLogger('nlpeople_logger')
+  LOGGER.setLevel(logging.DEBUG)
 
   fh = logging.FileHandler(f'..\log\SQUAD_{now}.log')
   fh.setLevel(logging.DEBUG)
@@ -142,7 +146,5 @@ def init_logger():
   ch.setFormatter(formatter)
   fh.setFormatter(formatter)
 
-  logger.addHandler(ch)
-  logger.addHandler(fh)
-
-  return logger
+  LOGGER.addHandler(ch)
+  LOGGER.addHandler(fh)
