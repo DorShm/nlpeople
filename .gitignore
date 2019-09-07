@@ -4,4 +4,4 @@ assets
 venv
 *__pycache__
 logger
-*.log
+log
