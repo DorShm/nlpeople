@@ -76,7 +76,8 @@ def preprocess_question(paragraph, question):
     "exact_match": utils.get_match_vectors(paragraph["context"], question["question"])}
 
   answer_details = question["answers"][0]
-  instance_question["answer_start"] = answer_details["answer_start"]
-  instance_question["answer_end"] = instance_question["answer_start"] + len(answer_details["text"])
+
+  instance_question['answer_start'], instance_question['answer_end'] = \
+    utils.find_answer_word_index(paragraph['context'], answer_details['text'], answer_details['answer_start'])
 
   return instance_question
