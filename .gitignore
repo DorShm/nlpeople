@@ -2,5 +2,6 @@
 .idea
 assets
 venv
-__pycache__
+*__pycache__
 logger
+*.log

@@ -3,6 +3,7 @@ import json
 import nltk
 from src.General import utils
 from src.General import settings
+from tqdm import tqdm
 
 pos_tag_to_id = None
 ner_tag_to_id = None
@@ -10,22 +11,23 @@ ner_tag_to_id = None
 '''
   Document this!
 '''
-def preprocess(save_preproces_data=False):
+def preprocess(logger, save_preproces_data=False):
+  logger.info("Initiate preprocessing process")
   init_preprocess()
-
+  logger.info('Reading data from file')
   instances = read_data()
   preprocessed_instances = []
-
-  for instance in instances:
+  logger.info("Starting process data to instances")
+  for instance in tqdm(instances, total=len(instances)):
     for paragraph in instance["paragraphs"]:
       instance = preprocess_paragraph(paragraph)
 
       preprocessed_instances.append(instance)
 
   if save_preproces_data:
+    logger.info(f"Saving preprocessed data to {settings.config['preprocessing']['output_file']}")
     save_preprocessed_data(preprocessed_instances)
 
-  return preprocessed_instances
 
 '''
   Document this!
@@ -57,7 +59,6 @@ def preprocess_paragraph(paragraph):
     "context_ner": utils.get_context_ner(paragraph["context"], ner_tag_to_id),
     "qas": []
   }
-  # instance['context_emb'] = get_text_embeddings(paragraph['context'], embeddings_model)
 
   for question in paragraph["qas"]:
     instance_question = preprocess_question(paragraph, question)

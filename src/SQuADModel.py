@@ -1,4 +1,5 @@
 import ast
+import torch
 
 import torch
 from torch import Tensor, optim as optimizer
@@ -11,9 +12,10 @@ from src.General.QAModule import QAModule
 
 # noinspection PyArgumentList, PyTypeChecker
 class SQuADModel:
-  def __init__(self, words_embeddings, config):
+  def __init__(self, words_embeddings, config, logger):
+    self.logger = logger
     self.config = config['squad_model']
-    self.qa_module: QAModule = QAModule(words_embeddings, config)
+    self.qa_module: QAModule = QAModule(words_embeddings, config, logger)
     self.cuda_on = ast.literal_eval(self.config['cuda_on'])
     self.model_loss = ModelLoss()
     parameters = [parameter for parameter in self.qa_module.parameters() if parameter.requires_grad]
@@ -34,6 +36,7 @@ class SQuADModel:
 
     # TODO: Fix exception from start_label=starting_letter instead of starting_word
     loss = F.cross_entropy(start, start_label) + F.cross_entropy(end, end_label)
+
     self.model_loss.calculate_loss(loss)
 
     loss.backward()

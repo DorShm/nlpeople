@@ -132,7 +132,7 @@ def init_logger():
   logger = logging.getLogger('nlpeople_logger')
   logger.setLevel(logging.DEBUG)
 
-  fh = logging.FileHandler(f'..\logger\SQUAD_{now}.log')
+  fh = logging.FileHandler(f'..\log\SQUAD_{now}.log')
   fh.setLevel(logging.DEBUG)
 
   ch = logging.StreamHandler()
