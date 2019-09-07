@@ -1,4 +1,5 @@
 import ast
+import torch
 
 from torch import Tensor, optim as optimizer
 from torch.autograd import Variable
@@ -10,9 +11,10 @@ from src.General.QAModule import QAModule
 
 # noinspection PyArgumentList
 class SQuADModel:
-  def __init__(self, words_embeddings, config):
+  def __init__(self, words_embeddings, config, logger):
+    self.logger = logger
     self.config = config['squad_model']
-    self.qa_module: QAModule = QAModule(words_embeddings, config)
+    self.qa_module: QAModule = QAModule(words_embeddings, config, logger)
     self.cuda_on = ast.literal_eval(self.config['cuda_on'])
     self.model_loss = ModelLoss()
     parameters = [parameter for parameter in self.qa_module.parameters() if parameter.requires_grad]
@@ -23,15 +25,15 @@ class SQuADModel:
   def update(self, paragrapth, question):
     self.qa_module.train()
 
-    start_tensor = self.get_tensor(question['answer_start'])
-    end_tensor: Tensor = self.get_tensor(question['answer_end'])
+    start_tensor = torch.LongTensor(int((question['answer_start'])))
+    end_tensor = torch.LongTensor(int(question['answer_end']))
 
     start_label = Variable(start_tensor)
     end_label = Variable(end_tensor)
 
-    start, end, prediction = self.qa_module(paragrapth, question)
+    start, end = self.qa_module(paragrapth, question)
     # noinspection PyTypeChecker
-    loss = F.cross_entropy(start, start_label) + F.cross_entropy(end, end_label)
+    loss = F.cross_entropy(start, start_label.unsqueeze(0)) + F.cross_entropy(end, end_label.unsqueeze(0))
     self.model_loss.calculate_loss(loss)
 
     loss.backward()

@@ -13,8 +13,10 @@ def main():
 
     with open(settings.config['general']['data_file'], 'r') as f:
       data = json.load(f)['data']
-    squad_model = SQuADModel(init.words_embeddings, settings.config)
+    squad_model = SQuADModel(init.words_embeddings, settings.config, logger)
+    logger.info('Starting to train the network')
     for epoch in range(int(settings.config['general']['epoches'])):
+        logger.info(f'Starting epoch {epoch}')
         for paragraph in data:
             for question in paragraph['qas']:
                 squad_model.update(paragraph, question)
