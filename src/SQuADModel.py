@@ -60,17 +60,28 @@ class SQuADModel:
     """
     return tensor.cuda() if self.cuda_on else tensor
 
+  # TODO: Return model result
   def predict(self):
     self.qa_module.eval()
     pass
 
-  # TODO: Check necessity
+  # TODO: Necessary to compute accuracy
   def eval(self):
     pass
 
-  def save(self):
-    model_state_dict = dict([(key, value) for key, value in self.qa_module.state_dict().items()])
+  def load(self, epoch):
+    """
+    Load trained model state dict from file
+    :param epoch: epoch number
+    """
+    state_dict = torch.load(self.config["squad_model_path"].format(epoch))
+    self.qa_module.load_state_dict(state_dict)
 
-    torch.save(model_state_dict, self.config['squad_model_path'])
+  def save(self, epoch):
+    """
+    Save trained model state dict
+    :param epoch: epoch number
+    """
+    torch.save(self.qa_module.state_dict(), self.config['squad_model_path'].format(epoch))
 
-    self.loggee.info(f'Saved SQuAD model in {self.config["squad_model_path"]}')
+    self.loggee.info(f'Saved SQuAD model in {self.config["squad_model_path"].format(epoch)}')
