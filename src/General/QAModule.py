@@ -29,12 +29,14 @@ class QAModule(nn.Module):
 
     self.paragraph_contextual_encoder: ContextEncoder = ContextEncoder(self.contextual_config)
     self.question_contextual_encoder: ContextEncoder = ContextEncoder(self.contextual_config)
-    self.memory_layer: MemoryLayer = MemoryLayer(self.memory_config, self.question_contextual_encoder.layer_2.hidden_size)
+    self.memory_layer: MemoryLayer = MemoryLayer(self.memory_config,
+                                                 self.question_contextual_encoder.layer_2.hidden_size, self.cuda_on)
     self.linear_self_attention: LinearSelfAttn = LinearSelfAttn(self.question_contextual_encoder.output_size)
     self.answer_layer: AnswerLayer = AnswerLayer(self.answer_config, self.memory_layer.output_size,
                                     self.question_contextual_encoder.output_size)
 
-    self.set_cuda()
+    if self.cuda_on:
+      self.set_cuda()
 
   def set_cuda(self):
     self.lexicon_encoder.cuda()

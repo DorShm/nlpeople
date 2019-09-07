@@ -17,7 +17,8 @@ class SQuADModel:
     self.cuda_on = torch.cuda.is_available() and ast.literal_eval(self.config['cuda_on'])
 
     self.qa_module: QAModule = QAModule(words_embeddings, config, self.cuda_on)
-    self.set_cuda()
+    if self.cuda_on:
+      self.set_cuda()
 
     self.model_loss = ModelLoss()
     self.logger = logging.getLogger('nlpeople_logger')

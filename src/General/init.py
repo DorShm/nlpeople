@@ -1,4 +1,5 @@
 import nltk
+import ast
 import src.General.settings as settings
 import gensim.downloader as api
 import pickle
@@ -11,7 +12,8 @@ def init():
     global words_embeddings
 
     settings.init()
-    if bool(int(settings.config['preprocessing']['download'])):
+    download_datasets = ast.literal_eval(settings.config['preprocessing']['download'])
+    if download_datasets:
         download_nltk_datasets()
         words_embeddings = api.load(settings.config['wordsembeddings']['modle_name'])
         pickle.dump(words_embeddings, open("../assets/word2vec.model", 'wb'))
