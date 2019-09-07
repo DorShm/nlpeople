@@ -9,7 +9,7 @@ from src.General.Networks import LinearSelfAttn
 
 
 class QAModule(nn.Module):
-  def __init__(self, words_embeddings, config):
+  def __init__(self, words_embeddings, config, cuda_on):
     super(QAModule, self).__init__()
     # configurations
     self.lexicon_config = config['lexicon']
@@ -17,20 +17,33 @@ class QAModule(nn.Module):
     self.contextual_config = config['contextual']
     self.memory_config = config['memory_layer']
     self.answer_config = config['answer_layer']
+    self.cuda_on = cuda_on
 
     # networks
-    self.lexicon_encoder = LexiconEncoder(words_embeddings, self.lexicon_config)
-    self.german_english_cove = GermanEnglishCoVe(self.german_english_cove_config)
+    self.lexicon_encoder: LexiconEncoder = LexiconEncoder(words_embeddings, self.lexicon_config, self.cuda_on)
+    self.german_english_cove: GermanEnglishCoVe = GermanEnglishCoVe(self.german_english_cove_config)
+
     self.contextual_config['input_size'] = \
       self.german_english_cove.output_size + self.lexicon_encoder.output_size
     self.contextual_config['cove_size'] = self.german_english_cove.output_size
-    self.paragraph_contextual_encoder = ContextEncoder(self.contextual_config)
-    self.question_contextual_encoder = ContextEncoder(self.contextual_config)
-    self.memory_layer = MemoryLayer(self.memory_config, self.question_contextual_encoder.layer_2.hidden_size)
-    self.linear_self_attention = LinearSelfAttn(self.question_contextual_encoder.output_size)
-    self.answer_layer = AnswerLayer(self.answer_config, self.memory_layer.output_size,
+
+    self.paragraph_contextual_encoder: ContextEncoder = ContextEncoder(self.contextual_config)
+    self.question_contextual_encoder: ContextEncoder = ContextEncoder(self.contextual_config)
+    self.memory_layer: MemoryLayer = MemoryLayer(self.memory_config, self.question_contextual_encoder.layer_2.hidden_size)
+    self.linear_self_attention: LinearSelfAttn = LinearSelfAttn(self.question_contextual_encoder.output_size)
+    self.answer_layer: AnswerLayer = AnswerLayer(self.answer_config, self.memory_layer.output_size,
                                     self.question_contextual_encoder.output_size)
 
+    self.set_cuda()
+
+  def set_cuda(self):
+    self.lexicon_encoder.cuda()
+    self.german_english_cove.cuda()
+    self.paragraph_contextual_encoder.cuda()
+    self.question_contextual_encoder.cuda()
+    self.memory_layer.cuda()
+    self.linear_self_attention.cuda()
+    self.answer_layer.cuda()
 
   def forward(self, sentence, question):
     # Lexicon Layer

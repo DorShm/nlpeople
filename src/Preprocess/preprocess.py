@@ -1,8 +1,8 @@
 import json
+import logging
 
 import nltk
 
-from src.General.utils import LOGGER
 from src.General import utils
 from src.General import settings
 from tqdm import tqdm
@@ -14,12 +14,14 @@ ner_tag_to_id = None
   Document this!
 '''
 def preprocess(save_preproces_data=False):
-  LOGGER.info("Initiate preprocessing process")
+  logger = logging.getLogger('nlpeople_logger')
+  logger.info("Initiate preprocessing process")
+
   init_preprocess()
-  LOGGER.info('Reading data from file')
+  logger.info('Reading data from file')
   instances = read_data()
   preprocessed_instances = []
-  LOGGER.info("Starting process data to instances")
+  logger.info("Starting process data to instances")
   for instance in tqdm(instances, total=len(instances)):
     for paragraph in instance["paragraphs"]:
       instance = preprocess_paragraph(paragraph)
@@ -27,7 +29,7 @@ def preprocess(save_preproces_data=False):
       preprocessed_instances.append(instance)
 
   if save_preproces_data:
-    LOGGER.info(f"Saving preprocessed data to {settings.config['preprocessing']['output_file']}")
+    logger.info(f"Saving preprocessed data to {settings.config['preprocessing']['output_file']}")
     save_preprocessed_data(preprocessed_instances)
 
 
