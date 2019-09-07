@@ -26,7 +26,7 @@ def main():
             for question in paragraph['qas']:
                 squad_model.update(paragraph, question)
 
-    squad_model.save()
+        squad_model.save(epoch)
 
 
 def load_preprocessed_data(logger, split_ratio):
