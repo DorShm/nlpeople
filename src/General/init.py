@@ -18,7 +18,7 @@ def init():
     else:
         words_embeddings = pickle.load(open("../assets/word2vec.model", 'rb'))
 
-    return init_logger()
+    init_logger()
 
 
 def download_nltk_datasets():

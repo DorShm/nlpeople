@@ -9,10 +9,9 @@ from src.General.Networks import LinearSelfAttn
 
 
 class QAModule(nn.Module):
-  def __init__(self, words_embeddings, config, logger):
+  def __init__(self, words_embeddings, config):
     super(QAModule, self).__init__()
     # configurations
-    self.logger = logger
     self.lexicon_config = config['lexicon']
     self.german_english_cove_config = config['german_english_cove']
     self.contextual_config = config['contextual']
