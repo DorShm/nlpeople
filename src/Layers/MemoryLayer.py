@@ -16,7 +16,7 @@ class MemoryLayer(nn.Module):
     self.attention = Attention(int(config['hidden_size']), attention_type='dot')
     self.self_attention = Attention(int(config['attention_input_size']) * d)
     self.bi_lstm = OneLayerBRNN(input_size=(int(config['bi_lstm_input_size']) * d),
-                                hidden_size=int(config['hidden_size']), dropout=config['dropout'])
+                                hidden_size=int(config['hidden_size']))
 
     self.output_size = int(config['hidden_size'])
     self.dropout = nn.Dropout(float(config['dropout']))
@@ -61,7 +61,7 @@ class MemoryLayer(nn.Module):
     return M
 
   def drop_diag(self, mat):
-    mask = torch.eye(mat.shape[1], mat.shape[2])
+    mask = torch.eye(mat.shape[1], mat.shape[2]).cuda()
 
     mat_dropped = mat.clone()[:].masked_fill_(mask.bool(), 0)
 

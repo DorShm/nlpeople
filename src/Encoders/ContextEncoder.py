@@ -13,8 +13,8 @@ class ContextEncoder(nn.Module):
     self.layer_2_output_size = int(config['layer_2_output_size'])
     self.output_size = self.layer_1_output_size + self.layer_2_output_size
     self.dropout = float(config['dropout'])
-    self.layer_1 = OneLayerBRNN(self.layer_1_input_size, self.layer_1_output_size, dropout=self.dropout)
-    self.layer_2 = OneLayerBRNN(self.layer_2_input_size, self.layer_2_output_size, dropout=self.dropout)
+    self.layer_1 = OneLayerBRNN(self.layer_1_input_size, self.layer_1_output_size)
+    self.layer_2 = OneLayerBRNN(self.layer_2_input_size, self.layer_2_output_size)
 
   def forward(self, embeddings, cove_l1, cove_l2):
     layer_1_input = torch.cat((embeddings, cove_l1), 2)

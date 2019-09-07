@@ -1,13 +1,16 @@
 import torch
 import torch.nn.functional as functional
 from torch import nn as nn
+
+from src.General import utils
 from src.General.Networks import FeedForward
 
 
 class LexiconEncoder(nn.Module):
-  def __init__(self, words_embeddings, config):
+  def __init__(self, words_embeddings, config, cuda_on):
     super(LexiconEncoder, self).__init__()
     self.words_embeddings = words_embeddings
+    self.cuda_on = cuda_on
     self.pos_embeddings = torch.nn.Embedding(int(config['pos_embeddings_size']),
                                              int(config['pos_embeddings_output_size']))
 
@@ -50,7 +53,7 @@ class LexiconEncoder(nn.Module):
     for question_word in question:
       question_value = question_word.lower() if question_word.lower() in self.words_embeddings.vocab else 'unk'
       similarity.append(self.words_embeddings.similarity(word_value, question_value))
-    return torch.tensor(sum(similarity))
+    return utils.set_cuda(torch.tensor(sum(similarity)), self.cuda_on)
 
   '''
   return a tensor with the embeddings of a sentence
@@ -64,16 +67,15 @@ class LexiconEncoder(nn.Module):
   '''
 
   def get_word_embeddings(self, word):
-    return torch.tensor(
-      self.words_embeddings[word.lower()] if word.lower() in self.words_embeddings.vocab else torch.tensor(
-        self.words_embeddings['unk']))
-
+    return utils.set_cuda(torch.tensor(self.words_embeddings[word.lower()]
+                          if word.lower() in self.words_embeddings.vocab
+                          else self.words_embeddings['unk']), self.cuda_on)
   '''
   return a matrix where each row 'j' is a tensor that represent the pos of the word p_j in the document 
   '''
 
   def get_pos_matrix(self, pos_list):
-    pos_emb = [self.pos_embeddings(torch.tensor(word_pos)) for word_pos in pos_list]
+    pos_emb = [self.pos_embeddings(utils.set_cuda(torch.tensor(word_pos), self.cuda_on)) for word_pos in pos_list]
     return torch.stack(pos_emb)
 
   '''
@@ -81,27 +83,26 @@ class LexiconEncoder(nn.Module):
   '''
 
   def get_ner_matrix(self, ner_list):
-    ner_emb = [self.ner_embeddings(torch.tensor(word_ner)) for word_ner in ner_list]
+    ner_emb = [self.ner_embeddings(utils.set_cuda(torch.tensor(word_ner), self.cuda_on)) for word_ner in ner_list]
     return torch.stack(ner_emb)
 
-  def create_doc_vector(self, sentence_embeddings, context_pos, context_ner, context_match, question_emb, sentence,
+  def create_doc_vector(self, sentence_embeddings, context_pos, context_ner, context_match, sentence,
                         question):
     pos_emb = self.get_pos_matrix(context_pos)
     ner_emb = self.get_ner_matrix(context_ner)
-    match_emb = torch.stack([torch.tensor(match) for match in context_match])
     similarity_matrix = self.get_words_similarity_value(sentence, question)
-    embeddings_vector = torch.cat((sentence_embeddings, pos_emb, ner_emb, match_emb, similarity_matrix), 1)
+    embeddings_vector = torch.cat((sentence_embeddings, pos_emb, ner_emb, context_match, similarity_matrix), 1)
     return embeddings_vector
 
   def forward(self, paragraph, question):
     paragraph_emb = self.get_sentence_embeddings(paragraph['context'])
-    paragrapg_pos = paragraph['context_pos']
+    paragraph_pos = paragraph['context_pos']
     paragraph_ner = paragraph['context_ner']
-    paragraph_match = torch.stack([torch.tensor(match) for match in question['exact_match']])
+    paragraph_match = torch.stack([utils.set_cuda(torch.tensor(match), self.cuda_on) for match in question['exact_match']])
     question_emb = self.get_sentence_embeddings(question['question'])
-    paragraph_vector = self.create_doc_vector(paragraph_emb, paragrapg_pos,
+    paragraph_vector = self.create_doc_vector(paragraph_emb, paragraph_pos,
                                                              paragraph_ner, paragraph_match,
-                                                             question_emb, paragraph['context'],
+                                                             paragraph['context'],
                                                              question['question'])
     size = question_emb.size()
     question_vector = self.qFFN(question_emb.view(1, size[0], size[1]))

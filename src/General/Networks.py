@@ -21,15 +21,13 @@ class FeedForward(nn.Module):
 
 
 class OneLayerBRNN(nn.Module):
-  def __init__(self, input_size, hidden_size, dropout=None):
+  def __init__(self, input_size, hidden_size):
     super(OneLayerBRNN, self).__init__()
-    self.dropout = dropout
     self.output_size = hidden_size * 2
     self.hidden_size = hidden_size
     self.rnn = nn.RNN(input_size, hidden_size, num_layers=1, bidirectional=True)
 
   def forward(self, x):
-    #x = self.dropout(x)
     size = x.size()
     rnn_output, h = self.rnn(x)
     rnn_output = self.maxout(rnn_output, size)
