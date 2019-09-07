@@ -5,8 +5,9 @@ from src.General.Networks import OneLayerBRNN
 
 
 class MemoryLayer(nn.Module):
-  def __init__(self, config, d):
+  def __init__(self, config, d, cuda_on):
     super(MemoryLayer, self).__init__()
+    self.cuda_on = cuda_on
     self.q_transform = nn.RNN(input_size=(int(config['transform_input_size']) * d),
                               hidden_size=int(config['hidden_size']), nonlinearity=config['nonlinearity'])
 
@@ -61,8 +62,11 @@ class MemoryLayer(nn.Module):
     return M
 
   def drop_diag(self, mat):
-    mask = torch.eye(mat.shape[1], mat.shape[2]).cuda()
-
-    mat_dropped = mat.clone()[:].masked_fill_(mask.bool(), 0)
+    if self.cuda_on:
+      mask = torch.eye(mat.shape[1], mat.shape[2]).cuda()
+      mat_dropped = mat.clone()[:].masked_fill_(mask.bool(), 0)
+    else:
+      mask = torch.eye(mat.shape[1], mat.shape[2])
+      mat_dropped = mat.clone()[:].masked_fill_(mask.bool(), 0)
 
     return mat_dropped
