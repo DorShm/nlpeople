@@ -73,6 +73,28 @@ def get_alignment_vector():
 def get_text_embeddings(text, embeddings_module):
   return [embeddings_module[word] for word in text]
 
+def find_answer_word_index(paragraph, answer, answer_start):
+  """
+  Finds the :answer word index in given :paragraph
+  :param paragraph: which contains the :answer
+  :param answer: answer text
+  :param answer_start: answer start
+  :return: (answer start word index, answer end word index)
+  """
+  answer_start_word = 0
+
+  answer_tokens = nltk.word_tokenize(answer)
+  paragraph_tokens = nltk.word_tokenize(paragraph)
+
+  for word in paragraph_tokens:
+    if answer_start <= 0:
+      break
+
+    answer_start -= len(word) + 1
+    answer_start_word += 1
+
+  return answer_start_word, answer_start_word + len(answer_tokens) - 1
+
 def config_to_dict(config):
   """
   Converts a ConfigParser object into a dictionary.

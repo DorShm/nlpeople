@@ -1,6 +1,7 @@
 import ast
 import torch
 
+import torch
 from torch import Tensor, optim as optimizer
 from torch.autograd import Variable
 from torch.nn import utils, functional as F
@@ -9,7 +10,7 @@ from src.General.utils import ModelLoss
 from src.General.QAModule import QAModule
 
 
-# noinspection PyArgumentList
+# noinspection PyArgumentList, PyTypeChecker
 class SQuADModel:
   def __init__(self, words_embeddings, config, logger):
     self.logger = logger
@@ -22,18 +23,20 @@ class SQuADModel:
     self.optimizer = optimizer.Adamax(parameters, float(self.config['learning_rate']))
 
 
-  def update(self, paragrapth, question):
+  def update(self, paragraph, question):
     self.qa_module.train()
 
-    start_tensor = torch.LongTensor(int((question['answer_start'])))
-    end_tensor = torch.LongTensor(int(question['answer_end']))
+    start_tensor = self.get_tensor(torch.tensor([question['answer_start']]))
+    end_tensor: Tensor = self.get_tensor(torch.tensor([question['answer_end']]))
 
     start_label = Variable(start_tensor)
     end_label = Variable(end_tensor)
 
-    start, end = self.qa_module(paragrapth, question)
-    # noinspection PyTypeChecker
-    loss = F.cross_entropy(start, start_label.unsqueeze(0)) + F.cross_entropy(end, end_label.unsqueeze(0))
+    start, end = self.qa_module(paragraph, question)
+
+    # TODO: Fix exception from start_label=starting_letter instead of starting_word
+    loss = F.cross_entropy(start, start_label) + F.cross_entropy(end, end_label)
+
     self.model_loss.calculate_loss(loss)
 
     loss.backward()
@@ -46,6 +49,7 @@ class SQuADModel:
     # Calculate parameters with optimizer step
     self.optimizer.step()
 
+  # TODO: Change to set_cuda
   def get_tensor(self, tensor) -> Tensor:
     """
 
