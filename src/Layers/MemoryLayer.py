@@ -63,6 +63,6 @@ class MemoryLayer(nn.Module):
   def drop_diag(self, mat):
     mask = torch.eye(mat.shape[1], mat.shape[2])
 
-    mat[:].masked_fill_(mask.bool(), 0)
+    mat_dropped = mat.clone()[:].masked_fill_(mask.bool(), 0)
 
-    return mat
+    return mat_dropped
