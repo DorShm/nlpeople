@@ -1,11 +1,11 @@
 import json
 from torch import nn
-from src.Layers.MemoryLayer import MemoryLayer
-from src.Layers.AnswerLayer import AnswerLayer
-from src.Encoders.GermanEnglishCoVe import GermanEnglishCoVe
-from src.Encoders.LexiconEncoder import LexiconEncoder
-from src.Encoders.ContextEncoder import ContextEncoder
-from src.General.Networks import LinearSelfAttn
+from Layers.MemoryLayer import MemoryLayer
+from Layers.AnswerLayer import AnswerLayer
+from Encoders.GermanEnglishCoVe import GermanEnglishCoVe
+from Encoders.LexiconEncoder import LexiconEncoder
+from Encoders.ContextEncoder import ContextEncoder
+from General.Networks import LinearSelfAttn
 
 
 class QAModule(nn.Module):

@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from torchnlp.nn import Attention
-from src.General.Networks import OneLayerBRNN
+from General.Networks import OneLayerBRNN
 
 
 class MemoryLayer(nn.Module):

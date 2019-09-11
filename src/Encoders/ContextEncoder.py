@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from src.General.Networks import OneLayerBRNN
+from General.Networks import OneLayerBRNN
 
 
 # TODO: create confuguration for the contextual encoder

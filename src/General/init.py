@@ -1,9 +1,9 @@
 import nltk
 import ast
-import src.General.settings as settings
+import General.settings as settings
 import gensim.downloader as api
 import pickle
-from src.General.utils import init_logger
+from General.utils import init_logger
 
 words_embeddings = None
 

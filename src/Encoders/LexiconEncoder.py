@@ -2,8 +2,8 @@ import torch
 import torch.nn.functional as functional
 from torch import nn as nn
 
-from src.General import utils
-from src.General.Networks import FeedForward
+from General import utils
+from General.Networks import FeedForward
 
 
 class LexiconEncoder(nn.Module):

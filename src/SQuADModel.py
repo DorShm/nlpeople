@@ -6,8 +6,8 @@ from torch import Tensor, optim as optimizer
 from torch.autograd import Variable
 from torch.nn import utils, functional as F
 
-from src.General.utils import ModelLoss
-from src.General.QAModule import QAModule
+from General.utils import ModelLoss
+from General.QAModule import QAModule
 
 
 # noinspection PyArgumentList, PyTypeChecker
@@ -84,4 +84,4 @@ class SQuADModel:
     """
     torch.save(self.qa_module.state_dict(), self.config['squad_model_path'].format(epoch))
 
-    self.loggee.info(f'Saved SQuAD model in {self.config["squad_model_path"].format(epoch)}')
+    self.logger.info(f'Saved SQuAD model in {self.config["squad_model_path"].format(epoch)}')

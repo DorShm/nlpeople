@@ -1,6 +1,6 @@
 import nltk
 from configparser import ConfigParser
-from src.General.utils import *
+from General.utils import *
 
 #/content/drive/My Drive/NLP/Project
 config_file_path = "../assets/config.ini"

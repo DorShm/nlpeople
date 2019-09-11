@@ -3,8 +3,8 @@ import logging
 
 import nltk
 
-from src.General import utils
-from src.General import settings
+from General import utils
+from General import settings
 from tqdm import tqdm
 
 pos_tag_to_id = None

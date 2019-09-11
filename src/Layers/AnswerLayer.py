@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from src.General.Networks import Bilinear
+from General.Networks import Bilinear
 
 
 class AnswerLayer(nn.Module):
@@ -38,9 +38,9 @@ class AnswerLayer(nn.Module):
             start_score_list.append(start_vector)
             end_score_list.append(end_vector)
 
-        start_scores = torch.stack(start_score_list, 2)
-        end_scores = torch.stack(end_score_list, 2)
-        start = torch.mean(start_scores, 2)
-        end = torch.mean(end_scores, 2)
+        start_scores = torch.stack(start_score_list, 1)
+        end_scores = torch.stack(end_score_list, 1)
+        start = torch.mean(start_scores, 1)
+        end = torch.mean(end_scores, 1)
 
         return start, end
