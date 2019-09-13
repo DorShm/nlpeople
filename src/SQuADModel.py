@@ -1,6 +1,8 @@
 import ast
+import math
 
 import torch
+import numpy as np
 import logging
 from torch import Tensor, optim as optimizer
 from torch.autograd import Variable
@@ -61,23 +63,62 @@ class SQuADModel:
     return tensor.cuda() if self.cuda_on else tensor
 
   # TODO: Return model result
-  def predict(self):
+  def predict1(self, paragraph, question):
     self.qa_module.eval()
-    pass
+
+    start, end = self.qa_module(paragraph, question)
+    pos_end = self.position_encoding(start.size(1), start.size(1))
+    scores = torch.ger(start[0], end[0])
+    scores = scores * pos_end
+    scores.triu_()
+    top_k = 1
+    scores = scores.detach().cpu().numpy()
+    best_idx = np.argpartition(scores, -top_k, axis=None)[-top_k]
+    best_score = np.partition(scores, -top_k, axis=None)[-top_k]
+    s_idx, e_idx = np.unravel_index(best_idx, scores.shape)
+    answer_start, answer_end = int(question['answer_start']), int(question['answer_end'])
+
+    return s_idx, e_idx
+
+  def position_encoding(self, m, threshold=5):
+    encoding = np.ones((m, m), dtype=np.float32)
+    for i in range(m):
+      for j in range(i, m):
+        if j - i > threshold:
+          encoding[i][j] = float(1.0 / math.log(j - i + 1))
+    return torch.from_numpy(encoding).cuda()
+
+  def predict(self, paragraph, question):
+    self.qa_module.eval()
+
+    start_prediction, end_prediction = self.qa_module(paragraph, question)
+
+    start = np.argmax(start_prediction.detach().cpu().numpy())
+    end = np.argmax(end_prediction.detach().cpu().numpy())
+
+    return start, end
 
   # TODO: Necessary to compute accuracy
-  def eval(self):
-    pass
+  def eval(self, predictions, labels) -> float:
+    predictions = np.array(predictions)
+    labels = np.array(labels)
 
-  def load(self, epoch):
+    exact_match = (predictions == labels).all(axis=1).mean()
+    half_match = (predictions == labels).any(axis=1).mean()
+
+    return exact_match, half_match
+
+  def load(self, epoch='best'):
     """
     Load trained model state dict from file
     :param epoch: epoch number
     """
+    self.logger.info(f'Using model loaded from {self.config["squad_model_path"].format(epoch)}')
+
     state_dict = torch.load(self.config["squad_model_path"].format(epoch))
     self.qa_module.load_state_dict(state_dict)
 
-  def save(self, epoch):
+  def save(self, epoch='best'):
     """
     Save trained model state dict
     :param epoch: epoch number

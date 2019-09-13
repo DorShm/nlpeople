@@ -19,16 +19,18 @@ class AnswerLayer(nn.Module):
         for turn in range(self.turns):
             # Compute P_t^begin
             # P_t_begin <=> start_vector (Softmax might better be after predict_end_network usage
-            start_vector = F.softmax(self.predict_begin_network(M, s_t), 1)
+            start_temp = self.predict_begin_network(M, s_t)
 
             # Compute P_t^end
             # P_t_end <=> end_vector
             # TODO: Change this shitty name "square braces"
-            square_braces = s_t + torch.bmm(start_vector.unsqueeze(1), M).squeeze(1)
+            square_braces = s_t + torch.bmm(start_temp.unsqueeze(1), M).squeeze(1)
+
+            start_vector = F.softmax(start_temp, 1)
             end_vector = F.softmax(self.predict_end_network(M, square_braces), 1)
 
             # Compute β = s_t*W_5*M != s_(t+1)*W_6*M = P_t^begin
-            β = start_vector
+            β = start_temp
             # Compute x_(t+1) = β*M
             x_t = torch.bmm(β.unsqueeze(1), M).squeeze(1)
 

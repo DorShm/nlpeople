@@ -1,5 +1,5 @@
 import json
-from torch import nn
+from torch import nn, Tensor
 from Layers.MemoryLayer import MemoryLayer
 from Layers.AnswerLayer import AnswerLayer
 from Encoders.GermanEnglishCoVe import GermanEnglishCoVe
@@ -47,7 +47,7 @@ class QAModule(nn.Module):
     self.linear_self_attention.cuda()
     self.answer_layer.cuda()
 
-  def forward(self, sentence, question):
+  def forward(self, sentence, question) -> (Tensor, Tensor):
     # Lexicon Layer
     paragraph_vector, question_vector, paragraph_emb, question_emb = self.lexicon_encoder(sentence, question)
 
