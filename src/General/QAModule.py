@@ -63,7 +63,6 @@ class QAModule(nn.Module):
 
     memory = self.memory_layer(question_vector, paragraph_vector)
 
-    # TODO: create the finale GRU layer
     GRU_initial_state = self.linear_self_attention(question_vector)
     start, end = self.answer_layer(memory, GRU_initial_state)
     return start, end

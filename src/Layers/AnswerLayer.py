@@ -23,11 +23,10 @@ class AnswerLayer(nn.Module):
 
             # Compute P_t^end
             # P_t_end <=> end_vector
-            # TODO: Change this shitty name "square braces"
-            square_braces = s_t + torch.bmm(start_temp.unsqueeze(1), M).squeeze(1)
+            predict_end_input = s_t + torch.bmm(start_temp.unsqueeze(1), M).squeeze(1)
 
             start_vector = F.softmax(start_temp, 1)
-            end_vector = F.softmax(self.predict_end_network(M, square_braces), 1)
+            end_vector = F.softmax(self.predict_end_network(M, predict_end_input), 1)
 
             # Compute β = s_t*W_5*M != s_(t+1)*W_6*M = P_t^begin
             β = start_temp

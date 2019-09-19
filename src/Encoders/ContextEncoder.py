@@ -3,7 +3,6 @@ from torch import nn
 from General.Networks import OneLayerBRNN
 
 
-# TODO: create confuguration for the contextual encoder
 class ContextEncoder(nn.Module):
   def __init__(self, config):
     super(ContextEncoder, self).__init__()

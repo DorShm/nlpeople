@@ -20,7 +20,6 @@ def initialize_config():
   config.read(config_file_path)
   config = config_to_dict(config)
 
-#TODO: Move this to config file
 def initialize_hardcoded():
   global pos_tags
   global ner_tags

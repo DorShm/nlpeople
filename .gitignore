@@ -1,6 +1,13 @@
 .vscode
 .idea
-assets
+assets/DevTrain
+assets/MT-LSTM.pt
+assets/squad_model*
+assets/test.torch
+assets/dev-v1.1.json
+assets/test_data.json
+assets/train-v1.1.json
+assets/word2vec.model
 venv
 *__pycache__
 logger
